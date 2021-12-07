@@ -12,15 +12,18 @@ namespace AdventOfCode2021.Day2
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine());
 
             List<(string direction, int distance)> course = getCourse(puzzleInput.Lines);
+            (int horizontal, int depth) endpoint = driveCourse((0,0), course);
+            (int horizontal, int depth) endpointAim = driveCourse((0, 0), course);
 
-            Console.WriteLine("Larger measurements: {0}");
+            Console.WriteLine("Endpoint: Horizontal {0} * Depth {1}: {2}", endpoint.horizontal, endpoint.depth, endpoint.horizontal * endpoint.depth);
+            Console.WriteLine("Endpoint with aim: Horizontal {0} * Depth {1}: {2}", endpointAim.horizontal, endpointAim.depth, endpointAim.horizontal * endpointAim.depth);
         }
 
-        static List<(string direction, int distance)> getCourse (List<string> input)
+        static List<(string direction, int distance)> getCourse(List<string> input)
         {
             List<(string direction, int distance)> course = new List<(string, int)>();
 
-            foreach(string move in input)
+            foreach (string move in input)
             {
                 string[] temp = move.Split(' ');
                 course.Add((temp[0], int.Parse(temp[1])));
@@ -28,5 +31,29 @@ namespace AdventOfCode2021.Day2
 
             return course;
         }
+
+        static (int horizontal, int depth) driveCourse((int horizontal, int depth) startPoint, List<(string direction, int distance)> course)
+        {
+            (int horizontal, int depth) endPoint = (0,0);
+
+            foreach ((string direction, int distance) move in course)
+            {
+                if(move.direction == "forward")
+                {
+                    endPoint.horizontal = endPoint.horizontal + move.distance;
+                }
+                else if (move.direction == "up")
+                {
+                    endPoint.depth = endPoint.depth - move.distance;
+                }
+                else if (move.direction == "down")
+                {
+                    endPoint.depth = endPoint.depth + move.distance;
+                }
+            }
+
+            return endPoint;
+        }
+
     }
 }
