@@ -18,6 +18,15 @@ namespace Day3
             int epsilonRate = calculateBitmask(epsilonRateBitmask);
 
             Console.WriteLine("Power consumption = gamma rate ({0}) * epsilon rate ({1}) = {2}", gammaRate, epsilonRate, gammaRate * epsilonRate);
+
+            string oxygenGeneratorRatingBitmask = getSingleBitmask(puzzleInput.Lines, true);
+            string c02ScrubberRatingBitmask = getSingleBitmask(puzzleInput.Lines, false);
+
+            int oxygenGeneratorRating = calculateBitmask(oxygenGeneratorRatingBitmask);
+            int c02ScrubberRating = calculateBitmask(c02ScrubberRatingBitmask);
+
+            Console.WriteLine("life support rating = oxygen generator rating ({0}) * CO2 scrubber rating ({1}) = {2}", oxygenGeneratorRating, c02ScrubberRating, 
+                oxygenGeneratorRating * c02ScrubberRating);
         }
 
         private static int calculateBitmask(string bitmask)
@@ -36,6 +45,38 @@ namespace Day3
             }
 
             return new string(bitmask);
+        }
+
+        private static string getSingleBitmask(List<string> input, bool mostCommon)
+        {
+            List<string> bitmasks = new List<string>(input);
+            int index = 0;
+
+            while(bitmasks.Count > 1)
+            {
+                char mostCommonBit = determineCommonBit(bitmasks, index, mostCommon);
+
+                bitmasks = filterBitmasks(bitmasks, index, mostCommonBit);
+
+                index++;
+            }
+
+            return bitmasks[0];
+        }
+
+        private static List<string> filterBitmasks(List<string> bitmasks, int index, char mostCommonBit)
+        {
+            List<string> filteredList = new List<string>();
+
+            foreach(string bitmask in bitmasks)
+            {
+                if(bitmask[index] == mostCommonBit)
+                {
+                    filteredList.Add(bitmask);
+                }
+            }
+
+            return filteredList;
         }
 
         private static char determineCommonBit(List<string> input, int index, bool mostCommon)
@@ -68,7 +109,7 @@ namespace Day3
             }
             else
             {
-                if (count0 < count1)
+                if (count0 <= count1)
                 {
                     return '0';
                 }
