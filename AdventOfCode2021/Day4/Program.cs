@@ -5,6 +5,8 @@ using System.Linq;
 
 namespace Day4
 {
+    // Would be cleaner if board is extracted into own class
+
     class Program
     {
         static void Main(string[] args)
@@ -20,6 +22,12 @@ namespace Day4
             int sumUnmarkedNumbers = getSumUnmarkedNumbers(board);
 
             Console.WriteLine("Score Winning Board: unmarked numbers({0}) * last called number ({1}): {2}", sumUnmarkedNumbers, lastCalledNumber, sumUnmarkedNumbers * lastCalledNumber);
+
+            boards = getBoards(puzzleInput.Lines);
+            lastCalledNumber = 0;
+            board = determineLastWinningBoard(boards, bingoNumbers, out lastCalledNumber);
+            sumUnmarkedNumbers = getSumUnmarkedNumbers(board);
+            Console.WriteLine("Score Last Winning Board: unmarked numbers({0}) * last called number ({1}): {2}", sumUnmarkedNumbers, lastCalledNumber, sumUnmarkedNumbers * lastCalledNumber);
         }
 
         private static (int value, bool drawn)[,] determineWinningBoard(List<(int value, bool drawn)[,]> boards, List<int> bingoNumbers, out int lastCalledNumber)
@@ -47,6 +55,41 @@ namespace Day4
             }
 
             return winningBoard;
+        }
+
+        private static (int value, bool drawn)[,] determineLastWinningBoard(List<(int value, bool drawn)[,]> boards, List<int> bingoNumbers, out int lastCalledNumber)
+        {
+            (int value, bool drawn)[,] lastWinningBoard = null;
+            lastCalledNumber = 0;
+            bool[] wonBoards = new bool[boards.Count];
+
+
+            foreach (int number in bingoNumbers)
+            {
+                for(int i = 0; i < boards.Count; i++)
+                {
+                    if(!wonBoards[i])
+                    {
+                        (int value, bool drawn)[,] board = boards[i];
+
+                        callNumber(board, number);
+                        if (isWinningBoard(board))
+                        {
+                            lastWinningBoard = board;
+                            wonBoards[i] = true;
+                        }
+                    }   
+                }
+
+                if(Array.TrueForAll(wonBoards, value => { return value;}))
+                {
+                    lastCalledNumber = number;
+                    break;
+                }
+
+            }
+
+            return lastWinningBoard;
         }
 
         private static bool isWinningBoard((int value, bool drawn)[,] board)
