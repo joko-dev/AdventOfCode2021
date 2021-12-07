@@ -13,14 +13,19 @@ namespace AdventOfCode2021.SharedKernel
             get { return _lines; }
         }
 
-        public PuzzleInput(string filePath)
+        public PuzzleInput(string filePath) : this(filePath, false) { }
+
+        public PuzzleInput(string filePath, bool ignoreEmptyLines)
         {
             string line;
             StreamReader file = File.OpenText(filePath);
 
             while ((line = file.ReadLine()) != null)
             {
-                _lines.Add(line);
+                if(!ignoreEmptyLines | line != "")
+                {
+                    _lines.Add(line);
+                }
             }
         }
     }
