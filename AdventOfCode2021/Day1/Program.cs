@@ -12,9 +12,10 @@ namespace AdventOfCode2021.Day1
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine());
 
             List<int> depths = puzzleInput.Lines.ConvertAll(int.Parse);
-            
+
 
             Console.WriteLine("Larger measurements: {0}", largerMeasurements(depths));
+            Console.WriteLine("Larger measurements one-sliding-window: {0}", largerMeasurementsSliding(depths,1));
             Console.WriteLine("Larger measurements three-sliding-window: {0}", largerMeasurementsSliding(depths, 3));
         }
 
