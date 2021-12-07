@@ -13,7 +13,7 @@ namespace AdventOfCode2021.Day2
 
             List<(string direction, int distance)> course = getCourse(puzzleInput.Lines);
             (int horizontal, int depth) endpoint = driveCourse((0,0), course);
-            (int horizontal, int depth) endpointAim = driveCourse((0, 0), course);
+            (int horizontal, int depth, int aim) endpointAim = driveCourseAim((0, 0, 0), course);
 
             Console.WriteLine("Endpoint: Horizontal {0} * Depth {1}: {2}", endpoint.horizontal, endpoint.depth, endpoint.horizontal * endpoint.depth);
             Console.WriteLine("Endpoint with aim: Horizontal {0} * Depth {1}: {2}", endpointAim.horizontal, endpointAim.depth, endpointAim.horizontal * endpointAim.depth);
@@ -49,6 +49,30 @@ namespace AdventOfCode2021.Day2
                 else if (move.direction == "down")
                 {
                     endPoint.depth = endPoint.depth + move.distance;
+                }
+            }
+
+            return endPoint;
+        }
+
+        static (int horizontal, int depth, int aim) driveCourseAim((int horizontal, int depth, int aim) startPoint, List<(string direction, int distance)> course)
+        {
+            (int horizontal, int depth, int aim) endPoint = (0, 0, 0);
+
+            foreach ((string direction, int distance) move in course)
+            {
+                if (move.direction == "forward")
+                {
+                    endPoint.horizontal = endPoint.horizontal + move.distance;
+                    endPoint.depth = endPoint.depth + (endPoint.aim * move.distance);
+                }
+                else if (move.direction == "up")
+                {
+                    endPoint.aim = endPoint.aim - move.distance;
+                }
+                else if (move.direction == "down")
+                {
+                    endPoint.aim = endPoint.aim + move.distance;
                 }
             }
 
