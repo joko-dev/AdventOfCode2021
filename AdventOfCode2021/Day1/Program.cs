@@ -37,15 +37,28 @@ namespace AdventOfCode2021.Day1
         {
             int inc = 0;
 
-            for (int i = 0; i < depths.Count; i++)
+            for (int i = windowSize; i < depths.Count; i++)
             {
-                if ((i > 0) && (depths[i] > depths[i - 1]))
+                int current = getSumWindow(depths, i, windowSize);
+                int previous = getSumWindow(depths, i - 1, windowSize);
+                if (current > previous)
                 {
                     inc++;
                 }
             }
 
             return inc;
+        }
+
+        private static int getSumWindow(List<int> depths, int upperIndex, int windowSize)
+        {
+            int sum = 0;
+            for(int i = 0; i < windowSize; i++)
+            {
+                sum = sum + depths[upperIndex - i];
+            }
+
+            return sum;
         }
     }
 }
