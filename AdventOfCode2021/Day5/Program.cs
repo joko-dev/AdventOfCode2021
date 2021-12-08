@@ -14,7 +14,11 @@ namespace AdventOfCode2021.Day5
 
             int[,] ventsMap = getMap(puzzleInput.Lines, false);
             int overlappingPoints = getCountOverlappingPoints(ventsMap, 2);
-            Console.WriteLine("Overlapping Points: {0}", overlappingPoints );
+            Console.WriteLine("Horizontal/Vertical Overlapping Points: {0}", overlappingPoints );
+
+            ventsMap = getMap(puzzleInput.Lines, true);
+            overlappingPoints = getCountOverlappingPoints(ventsMap, 2);
+            Console.WriteLine("All Overlapping Points: {0}", overlappingPoints);
         }
 
         private static int getCountOverlappingPoints(int[,] ventsMap, int minOverlapping)
@@ -52,10 +56,28 @@ namespace AdventOfCode2021.Day5
                         map[i, pair.from.Y] += 1;
                     }
                 }
-                // diagonal
-                if (includeDiagonal)
+                // diagonal, only viable if 45° --> difference betwenn X-coords = Difference between Y-coords
+                if (includeDiagonal && (Math.Abs(pair.from.X - pair.to.X) == Math.Abs(pair.from.Y - pair.to.Y)))
                 {
-
+                    for (int i = 0; i <= Math.Abs(pair.from.X - pair.to.X); i++)
+                    {
+                        int x = 0;
+                        int y = 0;
+                        if (pair.from.X < pair.to.X)
+                        {
+                            x = pair.from.X + i;
+                            y = pair.from.Y;
+                            y += (pair.from.Y < pair.to.Y) ? i : -i;
+                        }
+                        else
+                        {
+                            x = pair.to.X + i;
+                            y = pair.to.Y;
+                            y += (pair.to.Y < pair.from.Y) ? i : -i;
+                        }
+                        
+                        map[x, y] += 1;
+                    }
                 }
             }
 
