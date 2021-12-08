@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Day3
+namespace AdventOfCode2021.Day3
 {
     class Program
     {
