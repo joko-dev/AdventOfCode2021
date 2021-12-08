@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Day4
+namespace AdventOfCode2021.Day4
 {
     // Would be cleaner if board is extracted into own class
 
