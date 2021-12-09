@@ -25,6 +25,7 @@ namespace AdventOfCode2021.Day8
         {
             int? digit = null;
 
+            // digits with unique segment count can easily be retrieved
             switch (segments.Count())
             {
                 case 2: 
