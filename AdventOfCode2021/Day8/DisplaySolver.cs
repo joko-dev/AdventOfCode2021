@@ -33,7 +33,7 @@ namespace AdventOfCode2021.Day8
             return uniqueDigits.Contains(digit);
         }
 
-        private string[] segmentsDefined = new string[7] { "d", "e", "a", "f", "g", "b", "c" };
+        private string[] segmentsDefined = new string[7] { "", "", "", "", "", "", "" };
 
         private List<DisplaySignal> inputSignals;
         public List<DisplaySignal> outputDigits { get; }
@@ -50,61 +50,165 @@ namespace AdventOfCode2021.Day8
 
         public void Solve()
         {
-            while(!segmentsComplete())
-            {
-                List<DisplaySignal> signals = inputSignals;
-                signals.AddRange(outputDigits);
+            List<DisplaySignal> signals = inputSignals;
+            signals.AddRange(outputDigits);
+            signals = signals.OrderBy(item => item.Segments.Count()).ToList();
 
-                foreach (DisplaySignal signal in signals)
+            // Approach: mark 1 -> mark 7 (segment 0 defined) -> mark 4 -> mark 3 (segments 1, 3, 6 defined) --> mark 5 (segment 5 and 2 defined) --> define last segment 4;
+            // Maybe there is a common solution, but i'm to dumb to figure it out.
+            setOne(signals.Where(item => item.Segments.Count == 2).First());
+            setSeven(signals.Where(item => item.Segments.Count == 3).First());
+            setFour(signals.Where(item => item.Segments.Count == 4).First());
+            setThree(signals.Where(item => item.Segments.Count == 5).ToList());
+            setFive(signals.Where(item => item.Segments.Count == 5).ToList());
+            setEight(signals.Where(item => item.Segments.Count == 7).First());
+        }
+
+        private void setOne(DisplaySignal displaySignal)
+        {
+            if(displaySignal.Segments.Count == 2)
+            {
+                segmentsDefined[2] = new string(displaySignal.Segments.ToArray());
+                segmentsDefined[5] = new string(displaySignal.Segments.ToArray());
+            }
+            else
+            {
+                throw new ArgumentException();
+            }            
+        }
+
+        private void setSeven(DisplaySignal displaySignal)
+        {
+            if (displaySignal.Segments.Count == 3)
+            {
+                foreach(char segment in displaySignal.Segments)
                 {
-                    if (!getDigit(signal).HasValue)
+                    if(segmentsDefined[2].IndexOf(segment) == -1)
                     {
-                        //checkSegments(signal);
+                        segmentsDefined[0] = segment.ToString();
                     }
                 }
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+        private void setFour(DisplaySignal displaySignal)
+        {
+            if (displaySignal.Segments.Count == 4)
+            {
+                foreach (char segment in displaySignal.Segments)
+                {
+                    if (segmentsDefined[2].IndexOf(segment) == -1)
+                    {
+                        segmentsDefined[1] += segment;
+                        segmentsDefined[3] += segment;
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+        private void setThree(List<DisplaySignal> displaySignals)
+        {
+            foreach(DisplaySignal displaySignal in displaySignals)
+            {
+                if (displaySignal.Segments.Count == 5)
+                {
+                    string coded = getCodedDigitString( displaySignal);
+                    //check both elements in segment 2 are in the signal. If yes it's the digit 3 
+                    var tempList = segmentsDefined[2].Where(c => displaySignal.Segments.Any(c2 => c2 == c));
+
+                    if (coded == "0123 5 " && tempList.Count() == 2)
+                    {
+                        // determine segments
+                        segmentsDefined[6] = displaySignal.Segments.Where(s => !segmentsDefined.Any(s2 => s2.Contains(s))).First().ToString();
+                        segmentsDefined[3] = segmentsDefined[3].Where(c => displaySignal.Segments.Any(c2 => c2 == c)).First().ToString();
+                        segmentsDefined[1] = segmentsDefined[1].Replace(segmentsDefined[3], "");
+                        break;
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+        }
+        private void setFive(List<DisplaySignal> displaySignals)
+        {
+            foreach (DisplaySignal displaySignal in displaySignals)
+            {
+                if (displaySignal.Segments.Count == 5)
+                {
+                    string coded = getCodedDigitString(displaySignal);
+                    //check both elements in segment 2 are in the signal. If yes it's the digit 5
+                    var tempList = segmentsDefined[2].Where(c => displaySignal.Segments.Any(c2 => c2 == c));
+
+                    if (coded == "0123 56" && tempList.Count() == 1)
+                    {
+                        // determine segments 
+                        segmentsDefined[5] = segmentsDefined[5].Where(c => displaySignal.Segments.Any(c2 => c2 == c)).First().ToString();
+                        segmentsDefined[2] = segmentsDefined[2].Replace(segmentsDefined[5], "");
+                        break;
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+        }
+        private void setEight(DisplaySignal displaySignal)
+        {
+            if (displaySignal.Segments.Count == 7)
+            {
+                segmentsDefined[4] = displaySignal.Segments.Where(s => !segmentsDefined.Any(s2 => s2.Contains(s))).First().ToString();
+            }
+            else
+            {
+                throw new ArgumentException();
             }
         }
 
         public int? getDigit(DisplaySignal signal)
         {
             int? digit = null;
-            string temp = "       ";
+            string coded = getCodedDigitString(signal);
 
-            foreach (char segment in signal.Segments)
-            {
-                int index = Array.IndexOf(segmentsDefined, Convert.ToString(segment));
-                if(index >= 0)
-                {
-                    StringBuilder sb = new StringBuilder(temp);
-                    sb[index] = Convert.ToChar(Convert.ToString(index));
-                    temp = sb.ToString();
-                }
-            }
-
-            if (temp == "012 456") { digit = 0; }
-            else if (temp == "  2  5 ") { digit = 1; }
-            else if (temp == "0 234 6") { digit = 2; }
-            else if (temp == "0 23 56") { digit = 3; }
-            else if (temp == " 123 5 ") { digit = 4; }
-            else if (temp == "01 3 56") { digit = 5; }
-            else if (temp == "01 3456") { digit = 6; }
-            else if (temp == "0 2  5 ") { digit = 7; }
-            else if (temp == "0123456") { digit = 8; }
-            else if (temp == "0123 56") { digit = 8; }
+            if (coded == "012 456") { digit = 0; }
+            else if (coded == "  2  5 ") { digit = 1; }
+            else if (coded == "0 234 6") { digit = 2; }
+            else if (coded == "0 23 56") { digit = 3; }
+            else if (coded == " 123 5 ") { digit = 4; }
+            else if (coded == "01 3 56") { digit = 5; }
+            else if (coded == "01 3456") { digit = 6; }
+            else if (coded == "0 2  5 ") { digit = 7; }
+            else if (coded == "0123456") { digit = 8; }
+            else if (coded == "0123 56") { digit = 9; }
 
             return digit;
         }
 
-        private bool segmentsComplete()
+        private string getCodedDigitString(DisplaySignal signal)
         {
-            bool complete = true;
-
-            foreach (string segment in segmentsDefined)
+            string coded = "       ";
+            foreach (char segment in signal.Segments)
             {
-                complete = complete && (segment.Length == 1);
+                for(int i = 0; i < segmentsDefined.Count(); i++)
+                {
+                    if (segmentsDefined[i].Contains(segment))
+                    {
+                        StringBuilder sb = new StringBuilder(coded);
+                        sb[i] = Convert.ToChar(Convert.ToString(i));
+                        coded = sb.ToString();
+                    }
+                }
             }
 
-            return complete;
+            return coded;
         }
 
         public int getDisplayNumber()
