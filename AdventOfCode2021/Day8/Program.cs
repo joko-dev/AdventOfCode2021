@@ -24,12 +24,8 @@ namespace AdventOfCode2021.Day8
             List<DisplaySignal> outputSignals = new List<DisplaySignal>();
             foreach (string line in lines)
             {
-                string output = line.Split('|')[1];
-                string[] digits = output.Split(' ');
-                foreach(string digit in digits)
-                {
-                    outputSignals.Add(new DisplaySignal(digit));
-                }
+                DisplaySolver solver = new DisplaySolver(line);
+                outputSignals.AddRange(solver.outputDigits);
             }
 
             return outputSignals;
@@ -38,11 +34,10 @@ namespace AdventOfCode2021.Day8
         private static int countNumbersWithUniqueSequenceCount(List<DisplaySignal> outputDigits)
         {
             int count = 0;
-            DisplaySolver solver = new DisplaySolver();
 
             foreach (DisplaySignal digit in outputDigits)
             {
-                if(solver.isUniqueSignal(digit))
+                if(DisplaySolver.isUniqueSignal(digit))
                 {
                     count++;
                 }
