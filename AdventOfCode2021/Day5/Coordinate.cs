@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode2021.Day5
 {
-    public class Coordinate
+    internal class Coordinate
     {
-        public Coordinate(int X, int Y)
+        internal Coordinate(int X, int Y)
         {
             this.X = X;
             this.Y = Y;
         }
 
-        public Coordinate(string coordinate)
+        internal Coordinate(string coordinate)
         {
             string[] temp = coordinate.Split(',');
             X = int.Parse(temp[0]);
             Y = int.Parse(temp[1]);
         }
 
-        public int X { get;  }
-        public int Y { get; }
+        internal int X { get;  }
+        internal int Y { get; }
 
     }
 }

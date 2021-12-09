@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode2021.Day6
 {
-    class Lanternfish : ICloneable
+    internal class Lanternfish : ICloneable
     {
         private const int DAYS_FIRST_CYCLE = 8;
         private const int DAYS_CYCLE = 6;

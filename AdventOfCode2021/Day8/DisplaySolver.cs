@@ -9,7 +9,7 @@ namespace AdventOfCode2021.Day8
     internal class DisplaySolver
     {
         private static readonly int[] uniqueDigits = { 1, 4, 7, 8 };
-        public static bool isUniqueSignal(DisplaySignal signal)
+        internal static bool isUniqueSignal(DisplaySignal signal)
         {
             int digit = -1;
 
@@ -36,9 +36,9 @@ namespace AdventOfCode2021.Day8
         private string[] segmentsDefined = new string[7] { "", "", "", "", "", "", "" };
 
         private List<DisplaySignal> inputSignals;
-        public List<DisplaySignal> outputDigits { get; }
+        internal List<DisplaySignal> outputDigits { get; }
 
-        public DisplaySolver(string line)
+        internal DisplaySolver(string line)
         {
             string[] temp = line.Split('|');
             string input = temp[0].Trim();
@@ -48,7 +48,7 @@ namespace AdventOfCode2021.Day8
             outputDigits = createSignalList(output);
         }
 
-        public void Solve()
+        internal void Solve()
         {
             List<DisplaySignal> signals = inputSignals;
             signals.AddRange(outputDigits);
@@ -173,7 +173,7 @@ namespace AdventOfCode2021.Day8
             }
         }
 
-        public int? getDigit(DisplaySignal signal)
+        internal int? getDigit(DisplaySignal signal)
         {
             int? digit = null;
             string coded = getCodedDigitString(signal);
@@ -211,7 +211,7 @@ namespace AdventOfCode2021.Day8
             return coded;
         }
 
-        public int getDisplayNumber()
+        internal int getDisplayNumber()
         {
             string output = "";
             foreach (DisplaySignal digit in outputDigits)
