@@ -16,7 +16,21 @@ namespace AdventOfCode2021.Day8
             int countUniqueNumberSequences = countNumbersWithUniqueSequenceCount(outputDigits);
             Console.WriteLine("Appeareance 1,4,7,8 in output: {0}", countUniqueNumberSequences);
 
-            Console.WriteLine("Appeareance 1,4,7,8 in output: {0}", countUniqueNumberSequences);
+            int outputSum = getOutputSum(puzzleInput.Lines);
+            Console.WriteLine("Output sum: {0}", outputSum);
+        }
+
+        private static int getOutputSum(List<string> lines)
+        {
+            int sum = 0;
+            foreach(string line in lines)
+            {
+                DisplaySolver solver = new DisplaySolver(line);
+                solver.Solve();
+                sum += solver.getDisplayNumber();
+            }
+
+            return sum;
         }
 
         private static List<DisplaySignal> getOutputSignals(List<string> lines)
