@@ -6,29 +6,17 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode2021.Day8
 {
-    class DisplayDigit
+    internal class DisplaySolver
     {
-        public static readonly int[] uniqueDigits = {1,4,7,8};
-
-        private List<char> segments;
-
-        public DisplayDigit(string segments)
+        private static readonly int[] uniqueDigits = { 1, 4, 7, 8 };
+        public bool isUniqueSignal(DisplaySignal signal)
         {
-            this.segments = new List<char>();
-            foreach(char segment in segments)
-            {
-                this.segments.Add(segment);
-            }
-        }
-
-        public int? getDigit()
-        {
-            int? digit = null;
+            int digit = -1;
 
             // digits with unique segment count can easily be retrieved
-            switch (segments.Count())
+            switch (signal.Segments.Count())
             {
-                case 2: 
+                case 2:
                     digit = 1;
                     break;
                 case 4:
@@ -42,7 +30,10 @@ namespace AdventOfCode2021.Day8
                     break;
             }
 
-            return digit;
+            return uniqueDigits.Contains(digit);
         }
+
+
     }
 }
+

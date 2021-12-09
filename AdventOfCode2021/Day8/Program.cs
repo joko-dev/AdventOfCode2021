@@ -12,35 +12,37 @@ namespace AdventOfCode2021.Day8
             Console.WriteLine("Signal Pattern Notes: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
-            List<DisplayDigit> outputDigits = getOutputDigits(puzzleInput.Lines);
+            List<DisplaySignal> outputDigits = getOutputSignals(puzzleInput.Lines);
             int countUniqueNumberSequences = countNumbersWithUniqueSequenceCount(outputDigits);
+            Console.WriteLine("Appeareance 1,4,7,8 in output: {0}", countUniqueNumberSequences);
 
             Console.WriteLine("Appeareance 1,4,7,8 in output: {0}", countUniqueNumberSequences);
         }
 
-        private static List<DisplayDigit> getOutputDigits(List<string> lines)
+        private static List<DisplaySignal> getOutputSignals(List<string> lines)
         {
-            List<DisplayDigit> outputDigits = new List<DisplayDigit>();
+            List<DisplaySignal> outputSignals = new List<DisplaySignal>();
             foreach (string line in lines)
             {
                 string output = line.Split('|')[1];
                 string[] digits = output.Split(' ');
                 foreach(string digit in digits)
                 {
-                    outputDigits.Add(new DisplayDigit(digit));
+                    outputSignals.Add(new DisplaySignal(digit));
                 }
             }
 
-            return outputDigits;
+            return outputSignals;
         }
 
-        private static int countNumbersWithUniqueSequenceCount(List<DisplayDigit> outputDigits)
+        private static int countNumbersWithUniqueSequenceCount(List<DisplaySignal> outputDigits)
         {
             int count = 0;
+            DisplaySolver solver = new DisplaySolver();
 
-            foreach (DisplayDigit digit in outputDigits)
+            foreach (DisplaySignal digit in outputDigits)
             {
-                if(digit.getDigit().HasValue && DisplayDigit.uniqueDigits.Contains((int)digit.getDigit()))
+                if(solver.isUniqueSignal(digit))
                 {
                     count++;
                 }
