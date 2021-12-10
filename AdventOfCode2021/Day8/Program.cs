@@ -9,6 +9,7 @@ namespace AdventOfCode2021.Day8
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 8: Seven Segment Search"));
             Console.WriteLine("Signal Pattern Notes: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 

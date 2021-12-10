@@ -8,6 +8,7 @@ namespace AdventOfCode2021.Day3
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 3: Binary Diagnostic"));
             Console.WriteLine("Diagnostic report:");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine());
 
