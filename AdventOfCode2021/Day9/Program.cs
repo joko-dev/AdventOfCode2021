@@ -10,7 +10,7 @@ namespace Day9
         static void Main(string[] args)
         {
             Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 9: Smoke Basin"));
-            Console.WriteLine("Signal Pattern Notes: ");
+            Console.WriteLine("Heightmap: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
             int[,] matrix = puzzleInput.getInputAsMatrixInt();
