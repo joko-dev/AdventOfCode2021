@@ -8,9 +8,9 @@ namespace AdventOfCode2021.Day8
 {
     class DisplaySignal
     {
-        public List<char> Segments { get; }
+        internal List<char> Segments { get; }
 
-        public DisplaySignal(string segments)
+        internal DisplaySignal(string segments)
         {
             this.Segments = new List<char>();
             foreach(char segment in segments)

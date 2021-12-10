@@ -9,6 +9,7 @@ namespace AdventOfCode2021.Day6
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 6: Lanternfish"));
             Console.WriteLine("Lanternfish: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 

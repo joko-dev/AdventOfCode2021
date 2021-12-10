@@ -9,6 +9,7 @@ namespace AdventOfCode2021.Day7
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 7: The Treachery of Whales"));
             Console.WriteLine("Crab submarine positions:");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 

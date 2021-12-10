@@ -8,6 +8,7 @@ namespace AdventOfCode2021.Day2
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 1: Sonar Sweep"));
             Console.WriteLine("Course file:");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine());
 

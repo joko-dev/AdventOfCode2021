@@ -11,6 +11,7 @@ namespace AdventOfCode2021.Day4
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 4: Giant Squid"));
             Console.WriteLine("Bingo file:");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 

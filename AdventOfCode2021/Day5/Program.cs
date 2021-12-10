@@ -9,6 +9,7 @@ namespace AdventOfCode2021.Day5
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 5: Hydrothermal Venture"));
             Console.WriteLine("Hydrothermal vents file: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
