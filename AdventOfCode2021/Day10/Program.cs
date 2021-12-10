@@ -53,9 +53,9 @@ namespace AdventOfCode2021.Day10
 
         private static bool isLineIncompleted(string line)
         {
-            List<char> openedChunks = getChunkList(line);
+            List<char> openedChunks = getChunkList(line, out int lastIndex);
 
-            return (openedChunks.Count > 0) & (getSyntaxErrorScore(line) == 0);
+            return (openedChunks.Count > 0) & (lastIndex == line.Length - 1);
         }
 
         private static List<char> getChunkList(string line, out int lastIndex)
@@ -74,6 +74,10 @@ namespace AdventOfCode2021.Day10
                 {
                     openedChunks.RemoveAt(openedChunks.Count - 1);
                 }
+                else
+                {
+                    break;
+                }
                 
             }
 
@@ -83,31 +87,18 @@ namespace AdventOfCode2021.Day10
         private static int getSyntaxErrorScore(string line)
         {
             int score = 0;
-            List<char> openedChunks = new List<char>();
-
-            foreach(char bracket in line)
+            List<char> openedChunks = getChunkList(line, out int lastIndex);
+            if(lastIndex < line.Length - 1)
             {
-                if (isOpeningBracket(bracket))
-                {
-                    openedChunks.Add(bracket);
-                }
-                else if (isValidClosingBracket(openedChunks[openedChunks.Count - 1], bracket))
-                {
-                    openedChunks.RemoveAt(openedChunks.Count - 1);
-                }
-                else
-                {
-                    score = getCurruptedScoreForBracket(bracket);
-                    break;
-                }
+                score = getCurruptedScoreForBracket(line[lastIndex]);
             }
-
+            
             return score;
         }
         private static Int64 getInvalidScore(string line)
         {
             Int64 score = 0;
-            List<char> openedChunks = getChunkList(line);
+            List<char> openedChunks = getChunkList(line, out int temp);
             openedChunks.Reverse();
 
             foreach (char chunk in openedChunks)
