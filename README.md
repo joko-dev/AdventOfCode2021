@@ -18,7 +18,7 @@ The console prompt my result for that day. To change to your input edit the corr
 :star::star: [Day 6](/AdventOfCode2021/Day6)\
 :star::star: [Day 7](/AdventOfCode2021/Day7)\
 :star::star: [Day 8](/AdventOfCode2021/Day8)\
-:x::x: Day 9 \
+:star::x: [Day 9](/AdventOfCode2021/Day9) \
 :x::x: Day 10 \
 :x::x: Day 11 \
 :x::x: Day 12 \
