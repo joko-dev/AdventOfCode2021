@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Day9
+namespace AdventOfCode2021.Day9
 {
     class Program
     {
@@ -13,7 +13,7 @@ namespace Day9
             Console.WriteLine("Heightmap: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
-            int[,] matrix = puzzleInput.getInputAsMatrixInt();
+            int[,] matrix = PuzzleConverter.getInputAsMatrixInt(puzzleInput.Lines);
             int sumRiskLevels = getSumRiskLevelsLowpoints(matrix);
             Console.WriteLine("Sum of risk levels: {0}", sumRiskLevels);
 
@@ -55,7 +55,7 @@ namespace Day9
         {
             bool lowpoint = true;
             int lowpointValue = matrix[point.x, point.y];
-            List <(int x, int y)> adjacentPoints = getAdjacentPoints(matrix, point);
+            List <(int x, int y)> adjacentPoints = PuzzleConverter.getAdjacentPoints(matrix, point, true, true, false);
 
             foreach((int x, int y) adjacent in adjacentPoints)
             {
@@ -65,17 +65,7 @@ namespace Day9
             return lowpoint;
         }
 
-        private static List<(int x, int y)> getAdjacentPoints(int[,] matrix, (int x, int y) point)
-        {
-            List<(int x, int y)> adjacent = new List<(int x, int y)>();
-
-            if (point.x > 0) { adjacent.Add((point.x - 1, point.y)); }
-            if (point.x < matrix.GetLength(0) - 1) { adjacent.Add((point.x + 1, point.y)); }
-            if (point.y > 0) { adjacent.Add((point.x, point.y - 1)); }
-            if (point.y < matrix.GetLength(1) - 1) { adjacent.Add((point.x, point.y + 1)); }
-
-            return adjacent;
-        }
+        
 
         private static List<int> getBasinSizes(int[,] matrix)
         {
@@ -113,7 +103,7 @@ namespace Day9
             if(matrix[point.x, point.y] != 9)
             {
                 basin.Add(point);
-                List<(int x, int y)> pointsToCheck = getAdjacentPoints(matrix, point);
+                List<(int x, int y)> pointsToCheck = PuzzleConverter.getAdjacentPoints(matrix, point, true, true, false);
                 foreach((int x, int y) adjacent in pointsToCheck)
                 {
                     if (!basin.Contains(adjacent))

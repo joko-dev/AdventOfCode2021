@@ -30,21 +30,5 @@ namespace AdventOfCode2021.SharedKernel
             }
         }
 
-        public int[,] getInputAsMatrixInt()
-        {
-            int height = Lines.Count();
-            int width = Lines.OrderBy(s => s.Length).Last().Length;
-            int[,] matrix = new int[width,height];
-
-            for(int h = 0; h < height; h++)
-            {
-                for(int w = 0; w < width; w++)
-                {
-                    matrix[w, h] = (int)char.GetNumericValue(Lines[h][w]);     
-                }
-            }
-
-            return matrix;
-        }
     }
 }

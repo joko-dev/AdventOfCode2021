@@ -10,17 +10,17 @@ Each day has its own console application. Start the corresponding project and gi
 The console prompt my result for that day. To change to your input edit the corresponding file in each project.
 
 ## Progression
-:star::star: [Day 1](/AdventOfCode2021/Day1) \
-:star::star: [Day 2](/AdventOfCode2021/Day2) \
-:star::star: [Day 3](/AdventOfCode2021/Day3) \
-:star::star: [Day 4](/AdventOfCode2021/Day4) \
-:star::star: [Day 5](/AdventOfCode2021/Day5)\
-:star::star: [Day 6](/AdventOfCode2021/Day6)\
-:star::star: [Day 7](/AdventOfCode2021/Day7)\
-:star::star: [Day 8](/AdventOfCode2021/Day8)\
-:star::star: [Day 9](/AdventOfCode2021/Day9) \
+:star::star: [Day  1](/AdventOfCode2021/Day1) \
+:star::star: [Day  2](/AdventOfCode2021/Day2) \
+:star::star: [Day  3](/AdventOfCode2021/Day3) \
+:star::star: [Day  4](/AdventOfCode2021/Day4) \
+:star::star: [Day  5](/AdventOfCode2021/Day5)\
+:star::star: [Day  6](/AdventOfCode2021/Day6)\
+:star::star: [Day  7](/AdventOfCode2021/Day7)\
+:star::star: [Day  8](/AdventOfCode2021/Day8)\
+:star::star: [Day  9](/AdventOfCode2021/Day9) \
 :star::star: [Day 10](/AdventOfCode2021/Day10) \
-:x::x: Day 11 \
+:star::star: [Day 11](/AdventOfCode2021/Day11) \
 :x::x: Day 12 \
 :x::x: Day 13 \
 :x::x: Day 14 \
