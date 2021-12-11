@@ -13,22 +13,38 @@ namespace AdventOfCode2021.Day11
             Console.WriteLine("Octopus energy levels: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
-            int flashes = countFlashes(generateOctopuses(PuzzleConverter.getInputAsMatrixInt(puzzleInput.Lines)), 100);
+            int firstStepAllFlashed = 0;
+
+            int flashes = countFlashes(generateOctopuses(PuzzleConverter.getInputAsMatrixInt(puzzleInput.Lines)), 100, out firstStepAllFlashed);
             Console.WriteLine("Count flashes: {0}", flashes);
+
+            // could be better with new function/cancel, but works
+            countFlashes(generateOctopuses(PuzzleConverter.getInputAsMatrixInt(puzzleInput.Lines)), 1000, out firstStepAllFlashed);
+            Console.WriteLine("first step all flashed: {0}", firstStepAllFlashed);
         }
 
-        private static int countFlashes((int energyLevel, bool flashed)[,] octopuses, int stepCount)
+        private static int countFlashes((int energyLevel, bool flashed)[,] octopuses, int stepCount, out int firstStepAllFlashed)
         {
             int flashes = 0;
+            int newFlashes = 0;
+            int octopusCount = octopuses.GetLength(0) * octopuses.GetLength(1);
+            firstStepAllFlashed = 0;
+
 
             for (int step = 1; step <= stepCount; step++)
             {
                 increaseAllEnergyLevels(octopuses);
                 checkFlashes(octopuses);
 
-                flashes += (from (int energyLevel, bool flashed) octo in octopuses where octo.energyLevel > 9 select octo.energyLevel).Count();
+                newFlashes = (from (int energyLevel, bool flashed) octo in octopuses where octo.energyLevel > 9 select octo.energyLevel).Count();
+                flashes += newFlashes;
 
                 resetAllFlashedOctopuses(octopuses);
+
+                if((firstStepAllFlashed == 0) && (octopusCount == newFlashes))
+                {
+                    firstStepAllFlashed = step;
+                }
             }
 
             return flashes;
