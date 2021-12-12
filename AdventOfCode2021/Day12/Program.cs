@@ -18,19 +18,7 @@ namespace AdventOfCode2021.Day12
             Console.WriteLine("Paths through cave system (small cave once): {0}", paths.Count);
 
             paths = getAllConnectionsOneSmallCaveTwo(caveMap);
-            //Console.WriteLine(getVisual(paths));
             Console.WriteLine("Paths through cave system (one small cave two times): {0}", paths.Count);
-        }
-
-        private static string getVisual(List<List<string>> paths)
-        {
-            string vis = "";
-            foreach(List<string> path in paths)
-            {
-                vis += String.Join(",", path);
-                vis += "\n";
-            }
-            return vis;
         }
 
         private static List<List<string>> getAllConnectionsSmallCavesOnce(List<CaveConnection> caveMap)
@@ -45,6 +33,7 @@ namespace AdventOfCode2021.Day12
 
         }
 
+        // terrible performance because of duplicates in list, but works
         private static List<List<string>> getAllConnectionsOneSmallCaveTwo(List<CaveConnection> caveMap)
         {
             List<List<string>> paths = new List<List<string>>();
