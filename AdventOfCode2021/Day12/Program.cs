@@ -18,16 +18,28 @@ namespace AdventOfCode2021.Day12
             Console.WriteLine("Paths through cave system (small cave once): {0}", paths.Count);
 
             paths = getAllConnectionsOneSmallCaveTwo(caveMap);
+            //Console.WriteLine(getVisual(paths));
             Console.WriteLine("Paths through cave system (one small cave two times): {0}", paths.Count);
+        }
+
+        private static string getVisual(List<List<string>> paths)
+        {
+            string vis = "";
+            foreach(List<string> path in paths)
+            {
+                vis += String.Join(",", path);
+                vis += "\n";
+            }
+            return vis;
         }
 
         private static List<List<string>> getAllConnectionsSmallCavesOnce(List<CaveConnection> caveMap)
         {
             List<List<string>> paths = new List<List<string>>();
 
-            paths.AddRange(getCavePathsSmallCavesOnlyOnce(caveMap, "start", null));
+            paths.AddRange(getCavePaths(caveMap, "start", null, ("",2)));
 
-            checkCompletePaths(paths);
+            paths = getCompletePaths(paths);
 
             return paths;
 
@@ -36,16 +48,60 @@ namespace AdventOfCode2021.Day12
         private static List<List<string>> getAllConnectionsOneSmallCaveTwo(List<CaveConnection> caveMap)
         {
             List<List<string>> paths = new List<List<string>>();
+            
+            List<string> smallCaves = getSmallCaves(caveMap);
 
-            paths.AddRange(getCavePathsSmallCavesOnlyOnce(caveMap, "start", null));
+            foreach(string cave in smallCaves)
+            {
+                if(!isStartingCave(cave) && !isEndingCave(cave))
+                {
+                    List<List<string>> newPaths = getCavePaths(caveMap, "start", null, (cave, 2));
 
-            checkCompletePaths(paths);
+                    for (int i = 0; i < newPaths.Count; i++)
+                    {
+                        bool exists = false;
+                        for (int j = 0; j < paths.Count; j++)
+                        {
+                            if (newPaths[i].SequenceEqual(paths[j]))
+                            {
+                                exists = true;
+                                break;
+                            }
+                        }
+
+                        if (!exists)
+                        {
+                            paths.Add(newPaths[i]);
+                        }
+                    }
+                }
+            }
+            
+            paths = getCompletePaths(paths);
 
             return paths;
 
         }
 
-        private static List<List<string>> getCavePathsSmallCavesOnlyOnce(List<CaveConnection> caveMap, string cave, List<string> currentPath)
+        private static List<string> getSmallCaves(List<CaveConnection> caveMap)
+        {
+            List<string> smallCaves = new List<string>();
+
+            foreach (CaveConnection connection in caveMap)
+            {
+                if (isSmallCave(connection.From) && !smallCaves.Exists(c => c == connection.From))
+                { 
+                    smallCaves.Add(connection.From);
+                }
+                if (isSmallCave(connection.To) && !smallCaves.Exists(c => c == connection.To))
+                {
+                    smallCaves.Add(connection.To);
+                }
+            }
+            return smallCaves;
+        }
+
+        private static List<List<string>> getCavePaths(List<CaveConnection> caveMap, string cave, List<string> currentPath, (string cave, int visitTime) smallCaveSpecial )
         {
             List<List<string>> newPaths = new List<List<string>>();
             bool firstPath = true;
@@ -58,7 +114,7 @@ namespace AdventOfCode2021.Day12
             currentPath.Add(cave);
 
 
-            List<string> currentPathOriginaL = new List<string>(currentPath);
+            List<string> currentPathOriginal = new List<string>(currentPath);
 
             // new connection is endpoint --> no new paths 
             if (!isEndingCave(cave))
@@ -66,11 +122,11 @@ namespace AdventOfCode2021.Day12
                 foreach (CaveConnection connection in caveMap)
                 {
                     string nextCave = "";
-                    if(connection.From == cave && !existsSmallCaveInPath(connection.To, currentPathOriginaL))
+                    if(connection.From == cave && !existsSmallCaveInPath(connection.To, currentPathOriginal, smallCaveSpecial))
                     {
                         nextCave = connection.To;
                     }
-                    else if (connection.To == cave && !existsSmallCaveInPath(connection.From, currentPathOriginaL))
+                    else if (connection.To == cave && !existsSmallCaveInPath(connection.From, currentPathOriginal, smallCaveSpecial))
                     {
                         nextCave = connection.From;
                     }
@@ -84,11 +140,11 @@ namespace AdventOfCode2021.Day12
                         }
                         else
                         {
-                            path = new List<string>(currentPathOriginaL);
+                            path = new List<string>(currentPathOriginal);
                             newPaths.Add(path);
                         }
 
-                        newPaths.AddRange(getCavePathsSmallCavesOnlyOnce(caveMap, nextCave, path));
+                        newPaths.AddRange(getCavePaths(caveMap, nextCave, path, smallCaveSpecial));
 
                         firstPath = false;
                     }
@@ -98,40 +154,51 @@ namespace AdventOfCode2021.Day12
             return newPaths;
         }
 
-        private static bool existsSmallCaveInPath(string cave, List<string> path)
+        private static bool existsSmallCaveInPath(string cave, List<string> path, (string cave, int visitTime) smallCaveSpecial)
         {
+            bool exists = false;
             if (isSmallCave(cave))
             {
-                return path.Where(c => c == cave).Any();
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private static void checkCompletePaths(List<List<string>> paths)
-        {
-            for(int i = paths.Count - 1; i>= 0;  i--)
-            {
-                if(paths[i].Last() != "end")
+                if(cave == smallCaveSpecial.cave)
                 {
-                    paths.RemoveAt(i);
+                    exists = path.Where(c => c == cave).Count() == smallCaveSpecial.visitTime;
+                }
+                else
+                {
+                    exists = path.Where(c => c == cave).Any();
                 }
             }
+            
+            return exists;
+            
         }
 
-        public static bool isStartingCave(string cave)
+        private static List<List<string>> getCompletePaths(List<List<string>> paths)
+        {
+            List<List<string>> fixedPaths = new List<List<string>>(paths);
+
+            for (int i = fixedPaths.Count - 1; i>= 0;  i--)
+            {
+                if(!isEndingCave(fixedPaths[i].Last()))
+                {
+                    fixedPaths.RemoveAt(i);
+                }
+            }
+
+            return fixedPaths;
+        }
+
+        private static bool isStartingCave(string cave)
         {
             return (cave == "start");
         }
 
-        public static bool isEndingCave(string cave)
+        private static bool isEndingCave(string cave)
         {
             return (cave == "end");
         }
 
-        public static bool isSmallCave(string cave)
+        private static bool isSmallCave(string cave)
         {
             return (cave.ToLower() == cave);
         }
