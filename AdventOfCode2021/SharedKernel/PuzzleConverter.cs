@@ -25,6 +25,29 @@ namespace AdventOfCode2021.SharedKernel
             return matrix;
         }
 
+        public static int[,] getInputCoordinateAsMatrix(List<string> lines, int coordinateValue, string separator)
+        {
+            List<(int x, int y)> coordinates = new List<(int x, int y)>();
+
+            foreach(string line in lines)
+            {
+                string[] temp = line.Split(separator);
+                coordinates.Add((int.Parse(temp[0]), int.Parse(temp[1])));
+            }
+
+            int width = coordinates.Select(c => c.x).Max() + 1;
+            int height = coordinates.Select(c => c.y).Max() + 1;
+
+            int[,] matrix = new int[width, height];
+
+            foreach((int x, int y) coordinate in coordinates)
+            {
+                matrix[coordinate.x, coordinate.y] = coordinateValue;
+            }
+
+            return matrix;
+        }
+
         public static List<(int x, int y)> getAdjacentPoints(int[,] matrix, (int x, int y) point, bool horizontal, bool vertical, bool diagonal)
         {
             List<(int x, int y)> adjacent = new List<(int x, int y)>();
