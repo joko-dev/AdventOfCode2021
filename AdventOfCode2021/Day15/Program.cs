@@ -7,19 +7,93 @@ namespace AdventOfCode2021.Day15
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main(string[] args) 
         {
             Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 15: Chiton"));
             Console.WriteLine("Cave risk level: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
             int[,] cave = PuzzleConverter.getInputAsMatrixInt(puzzleInput.Lines);
+            Console.WriteLine("Full map (y)?");
+            if (Console.ReadLine() == "y")
+            {
+                cave = buildFullMap(cave);
+            }
+
 
             //Pathfinding algorithm - Dijkstra - https://de.wikipedia.org/wiki/Dijkstra-Algorithmus
             List<Coordinate> riskList = buildRiskList(cave);
-            Dictionary<Coordinate,Coordinate> predecessors = Dijkstra(riskList, riskList.Find(r => r.X == 0 && r.Y == 0));
+            Dictionary<Coordinate,Coordinate> predecessors = Dijkstra(cave,riskList, riskList.Find(r => r.X == 0 && r.Y == 0), riskList.Find(r => r.X == cave.GetLength(0) - 1 && r.Y == cave.GetLength(1) - 1));
             List<Coordinate> path = getShortestPath(riskList.Find(r => r.X == cave.GetLength(0) - 1 && r.Y == cave.GetLength(1) - 1), predecessors);
             Console.WriteLine("Lowest risk top left to bottom right: {0}", getRiskForPath(cave, path));
+        }
+
+        private static int[,] buildFullMap(int[,] cave)
+        {
+            int originalWidth = cave.GetLength(0);
+            int originalHeigth = cave.GetLength(1);
+            int[,] map = new int[originalWidth * 5, originalHeigth * 5];
+
+            for (int x = 0; x < cave.GetLength(0); x++)
+            {
+                for (int y = 0; y < cave.GetLength(1); y++)
+                {
+                    map[x, y] = cave[x, y];
+                }
+            }
+
+            for (int y = 0; y < cave.GetLength(1); y++)
+            {
+                for (int x = 0; x < cave.GetLength(0); x++)
+                {
+                    for (int stepY = 0; stepY < 5; stepY++)
+                    {
+                        for (int stepX = 0; stepX < 5; stepX++)
+                        {
+                            int SourceX = -1;
+                            int SourceY = -1;
+                            int TargetX = -1;
+                            int TargetY = -1;
+                            int toAdd = 1;
+                            if (stepX == 0 && stepY == 0) 
+                            {
+                                continue;
+                            }
+                            else if (stepY == 0)
+                            {
+                                SourceX = x + ((stepX - 1) * originalWidth);
+                                SourceY = y;
+                                TargetX = x + (stepX * originalWidth);
+                                TargetY = y;
+                            }
+                            else if (stepX == 0)
+                            {
+                                SourceX = x;
+                                SourceY = y + ((stepY - 1) * originalHeigth);
+                                TargetX = x;
+                                TargetY = y + (stepY * originalHeigth);
+                            }
+                            else
+                            {
+                                SourceX = x + (stepX * originalWidth);
+                                SourceY = y + ((stepY - 1) * originalHeigth);
+                                TargetX = x + (stepX * originalWidth);
+                                TargetY = y + (stepY * originalHeigth);
+                            }
+
+                            int newValue = map[SourceX, SourceY] + toAdd;
+                            if (newValue > 9)
+                            {
+                                newValue = 1;
+                            }
+
+                            map[TargetX,TargetY] = newValue;
+                        }
+                    } 
+                }
+            }
+
+            return map;
         }
 
         private static List<Coordinate> buildRiskList(int[,] cave)
@@ -63,17 +137,21 @@ namespace AdventOfCode2021.Day15
             return path;
         }
 
-        static Dictionary<Coordinate, Coordinate> Dijkstra(int[,] cave, Coordinate start)
+        static Dictionary<Coordinate, Coordinate> Dijkstra(int[,] cave, List<Coordinate> riskList, Coordinate start, Coordinate end)
         {
             Dictionary<Coordinate, int> distance = new Dictionary<Coordinate, int>();
             Dictionary<Coordinate, Coordinate> predecessor = new Dictionary<Coordinate, Coordinate>(); 
             List<Coordinate> coordinatesWithoutPath = new List<Coordinate>();
 
-            initialize(cave, start, distance, predecessor, coordinatesWithoutPath);
+            initialize(riskList, start, distance, predecessor, coordinatesWithoutPath);
             while (coordinatesWithoutPath.Count() > 0)
             {
-                Coordinate lowestDistance = findCoordinateWithLowestDinstance(coordinatesWithoutPath, distance);
+                Coordinate lowestDistance = findCoordinateWithLowestDistance(coordinatesWithoutPath, ref distance);
                 coordinatesWithoutPath.Remove(lowestDistance);
+                if(end is not null && lowestDistance == end)
+                {
+                    break;
+                }
                 List<Coordinate> adjacent = getAdjacentCoordinates(cave, lowestDistance, coordinatesWithoutPath);
                 foreach(Coordinate adj in adjacent)
                 {
@@ -88,7 +166,7 @@ namespace AdventOfCode2021.Day15
 
         private static void distanceUpdate(int[,] cave, Coordinate from, Coordinate to, Dictionary<Coordinate, int> distance, Dictionary<Coordinate, Coordinate> predecessor)
         {
-            int alternative = distance[from] + cave[from.X, from.Y];
+            int alternative = distance[from] + cave[to.X, to.Y];
 
             if (alternative < distance[to])
             {
@@ -114,10 +192,10 @@ namespace AdventOfCode2021.Day15
             return adjacent;
         }
 
-        private static Coordinate findCoordinateWithLowestDinstance(List<Coordinate> coordinatesWithoutPath, Dictionary<Coordinate, int> distance)
+        private static Coordinate findCoordinateWithLowestDistance(List<Coordinate> coordinatesWithoutPath, ref Dictionary<Coordinate, int> distance)
         {
             Coordinate coordinateLowestDistance = null;
-            distance.OrderBy(d => d.Value);
+            distance = distance.OrderBy(d => d.Value).ToDictionary(d => d.Key, d => d.Value);
             foreach(KeyValuePair<Coordinate, int> coordinate in distance)
             {
                 if(coordinatesWithoutPath.Exists(c => c == coordinate.Key))
@@ -131,22 +209,19 @@ namespace AdventOfCode2021.Day15
             return coordinateLowestDistance;
         }
 
-        static void initialize(int[,] cave, Coordinate start, Dictionary<Coordinate, int> distance, Dictionary<Coordinate,Coordinate> predecessor, List<Coordinate> coordinatesWithoutPath)
+        static void initialize(List<Coordinate> riskList, Coordinate start, Dictionary<Coordinate, int> distance, Dictionary<Coordinate,Coordinate> predecessor, List<Coordinate> coordinatesWithoutPath)
         {
             distance.Clear();
             predecessor.Clear();
             coordinatesWithoutPath.Clear();
 
-            for(int x = 0; x < cave.GetLength(0); x++)
+            foreach (Coordinate coordinate in riskList)
             {
-                for (int y = 0; y < cave.GetLength(1); y++)
-                {
-                    Coordinate coordinate = new Coordinate(x, y);
-                    distance.Add(coordinate, -1);
-                    predecessor.Add(coordinate,null);
-                    coordinatesWithoutPath.Add(coordinate);
-                }
+                distance.Add(coordinate, int.MaxValue);
+                predecessor.Add(coordinate, null);
+                coordinatesWithoutPath.Add(coordinate);
             }
+            
             distance[start] = 0;
         }
 
