@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace AdventOfCode2021.Day15
 {
-    class Program
+    class ProgramAStar
     {
         static void Main(string[] args) 
         {
-            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 15: Chiton"));
+            Console.WriteLine(PuzzleOutputFormatter.getPuzzleCaption("Day 15: Chiton - AStar"));
             Console.WriteLine("Cave risk level: ");
             PuzzleInput puzzleInput = new PuzzleInput(Console.ReadLine(), true);
 
@@ -21,11 +21,64 @@ namespace AdventOfCode2021.Day15
             }
 
 
-            //Pathfinding algorithm - Dijkstra - https://de.wikipedia.org/wiki/Dijkstra-Algorithmus
+            //Pathfinding algorithm - A* - https://de.wikipedia.org/wiki/A*-Algorithmus
             List<Coordinate> riskList = buildRiskList(cave);
-            Dictionary<Coordinate,Coordinate> predecessors = Dijkstra(cave,riskList, riskList.Find(r => r.X == 0 && r.Y == 0), riskList.Find(r => r.X == cave.GetLength(0) - 1 && r.Y == cave.GetLength(1) - 1));
-            List<Coordinate> path = getShortestPath(riskList.Find(r => r.X == cave.GetLength(0) - 1 && r.Y == cave.GetLength(1) - 1), predecessors);
+            List<Coordinate> path = AStar(cave, riskList, riskList.Find(r => r.X == 0 && r.Y == 0), riskList.Find(r => r.X == cave.GetLength(0) - 1 && r.Y == cave.GetLength(1) - 1));
             Console.WriteLine("Lowest risk top left to bottom right: {0}", getRiskForPath(cave, path));
+        }
+
+        private static List<Coordinate> AStar(int[,] cave, List<Coordinate> riskList, Coordinate start, Coordinate end)
+        {
+            List<Coordinate> path = new List<Coordinate>();
+            PriorityQueue<Coordinate, int> openList = new PriorityQueue<Coordinate, int>();
+            Dictionary<Coordinate, Coordinate> predecessors = new Dictionary<Coordinate, Coordinate>();
+            Dictionary<Coordinate, int> gValue = new Dictionary<Coordinate, int>();
+            HashSet<Coordinate> closedList = new HashSet<Coordinate>();
+
+            openList.Enqueue(start, 0);
+            do
+            {
+                Coordinate current = openList.Dequeue();
+                if(current == end)
+                {
+                    break;
+                }
+
+                closedList.Add(current);
+                expandNode(cave, current, riskList, openList, closedList, predecessors, gValue);
+
+            }
+            while (openList.Count > 0);
+
+            return path;
+        }
+
+        private static void expandNode(int[,] cave, Coordinate current, List<Coordinate> riskList, PriorityQueue<Coordinate, int> openList, HashSet<Coordinate> closedList,
+                                            Dictionary<Coordinate, Coordinate> predecessor, Dictionary<Coordinate, int> gValue)
+        {
+            List<Coordinate> adjacent = getAdjacentCoordinates(cave, current, riskList);
+            foreach(Coordinate adj in adjacent)
+            {
+                if (!closedList.Contains(current))
+                {
+                    int tentative_g = gValue[current] + cave[adj.X, adj.Y];
+
+                    if (!(openList.UnorderedItems.Any(i => i.Element == adj) && (tentative_g >= gValue[adj])))
+                    {
+                        predecessor[adj] = current;
+                        gValue[adj] = tentative_g;
+                        int f = tentative_g + getH();
+                        if(openList.UnorderedItems.Any(i => i.Element == adj))
+                        {
+                            openList..Priority = f;
+                        }
+                        else
+                        {
+                            openList.Enqueue(adj, f);
+                        }
+                    }
+                }
+            }
         }
 
         private static int[,] buildFullMap(int[,] cave)
@@ -124,57 +177,6 @@ namespace AdventOfCode2021.Day15
             return risk;
         }
 
-        private static List<Coordinate> getShortestPath(Coordinate endPoint, Dictionary<Coordinate, Coordinate> predecessors)
-        {
-            List<Coordinate> path = new List<Coordinate>();
-            path.Add(endPoint);
-            Coordinate u = endPoint;
-            while (predecessors[u] is not null)
-            {
-                u = predecessors[u];
-                path.Insert(0, u);
-            }
-            return path;
-        }
-
-        static Dictionary<Coordinate, Coordinate> Dijkstra(int[,] cave, List<Coordinate> riskList, Coordinate start, Coordinate end)
-        {
-            Dictionary<Coordinate, int> distance = new Dictionary<Coordinate, int>();
-            Dictionary<Coordinate, Coordinate> predecessor = new Dictionary<Coordinate, Coordinate>(); 
-            List<Coordinate> coordinatesWithoutPath = new List<Coordinate>();
-
-            initialize(riskList, start, distance, predecessor, coordinatesWithoutPath);
-            while (coordinatesWithoutPath.Count() > 0)
-            {
-                Coordinate lowestDistance = findCoordinateWithLowestDistance(coordinatesWithoutPath, ref distance);
-                coordinatesWithoutPath.Remove(lowestDistance);
-                if(end is not null && lowestDistance == end)
-                {
-                    break;
-                }
-                List<Coordinate> adjacent = getAdjacentCoordinates(cave, lowestDistance, coordinatesWithoutPath);
-                foreach(Coordinate adj in adjacent)
-                {
-                    if (coordinatesWithoutPath.Exists(c => c == adj))
-                    {
-                        distanceUpdate(cave, lowestDistance, adj, distance, predecessor);
-                    }
-                }
-            }
-            return predecessor;
-        }
-
-        private static void distanceUpdate(int[,] cave, Coordinate from, Coordinate to, Dictionary<Coordinate, int> distance, Dictionary<Coordinate, Coordinate> predecessor)
-        {
-            int alternative = distance[from] + cave[to.X, to.Y];
-
-            if (alternative < distance[to])
-            {
-                distance[to] = alternative;
-                predecessor[to] = from;
-            }
-        }
-
         private static List<Coordinate> getAdjacentCoordinates(int[,] cave, Coordinate coordinate, List<Coordinate> coordinates)
         {
             List<Coordinate> adjacent = new List<Coordinate>();
@@ -190,39 +192,6 @@ namespace AdventOfCode2021.Day15
             }
 
             return adjacent;
-        }
-
-        private static Coordinate findCoordinateWithLowestDistance(List<Coordinate> coordinatesWithoutPath, ref Dictionary<Coordinate, int> distance)
-        {
-            Coordinate coordinateLowestDistance = null;
-            distance = distance.OrderBy(d => d.Value).ToDictionary(d => d.Key, d => d.Value);
-            foreach(KeyValuePair<Coordinate, int> coordinate in distance)
-            {
-                if(coordinatesWithoutPath.Exists(c => c == coordinate.Key))
-                {
-                    coordinateLowestDistance = coordinate.Key;
-                    break;
-                }
-                                    
-            }
-
-            return coordinateLowestDistance;
-        }
-
-        static void initialize(List<Coordinate> riskList, Coordinate start, Dictionary<Coordinate, int> distance, Dictionary<Coordinate,Coordinate> predecessor, List<Coordinate> coordinatesWithoutPath)
-        {
-            distance.Clear();
-            predecessor.Clear();
-            coordinatesWithoutPath.Clear();
-
-            foreach (Coordinate coordinate in riskList)
-            {
-                distance.Add(coordinate, int.MaxValue);
-                predecessor.Add(coordinate, null);
-                coordinatesWithoutPath.Add(coordinate);
-            }
-            
-            distance[start] = 0;
         }
 
     }

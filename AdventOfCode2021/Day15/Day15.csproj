@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <StartupObject>AdventOfCode2021.Day15.ProgramAStar</StartupObject>
+    <StartupObject>AdventOfCode2021.Day15.ProgramDijkstra</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
